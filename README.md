@@ -9,6 +9,8 @@ YMM4（YukkuriMovieMaker v4）で、化学構造式を自由に描画し、図�
 > [!NOTE]
 > このプラグインは現在開発中です。機能の追加や変更が頻繁に行われる可能性があります。
 
+![movie](https://github.com/routersys/YMM4-ChemicalStructure/blob/main/CS.png)
+
 ---
 
 ### 概要
