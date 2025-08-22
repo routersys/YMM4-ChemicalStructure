@@ -1,0 +1,215 @@
+﻿<UserControl x:Class="YMM4ChemicalStructurePlugin.Shape.PeriodicTableView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YMM4ChemicalStructurePlugin.Shape"
+             mc:Ignorable="d" 
+             d:DesignHeight="420" d:DesignWidth="680" Background="#F0F0F0">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="NonmetalBrush" Color="#A5D6A7"/>
+        <SolidColorBrush x:Key="NobleGasBrush" Color="#CE93D8"/>
+        <SolidColorBrush x:Key="AlkaliMetalBrush" Color="#EF9A9A"/>
+        <SolidColorBrush x:Key="AlkalineEarthMetalBrush" Color="#FFE082"/>
+        <SolidColorBrush x:Key="MetalloidBrush" Color="#90CAF9"/>
+        <SolidColorBrush x:Key="PostTransitionMetalBrush" Color="#B0BEC5"/>
+        <SolidColorBrush x:Key="TransitionMetalBrush" Color="#FFAB91"/>
+        <SolidColorBrush x:Key="LanthanideBrush" Color="#B39DDB"/>
+        <SolidColorBrush x:Key="ActinideBrush" Color="#F48FB1"/>
+        <SolidColorBrush x:Key="UnknownBrush" Color="#E0E0E0"/>
+
+        <Style x:Key="ElementButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="34"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#212121"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border x:Name="background" Background="{TemplateBinding Background}" CornerRadius="4">
+                                <Border.Effect>
+                                    <DropShadowEffect ShadowDepth="1" BlurRadius="3" Color="#000000" Opacity="0.2"/>
+                                </Border.Effect>
+                            </Border>
+                            <Grid Margin="2">
+                                <TextBlock Text="{Binding AtomicNumber}" FontSize="8" HorizontalAlignment="Left" VerticalAlignment="Top" Opacity="0.8"/>
+                                <TextBlock Text="{Binding Symbol}" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding Name}" FontSize="7" HorizontalAlignment="Center" VerticalAlignment="Bottom" Opacity="0.9" TextTrimming="CharacterEllipsis"/>
+                            </Grid>
+                            <Border x:Name="highlight" CornerRadius="4" BorderBrush="White" BorderThickness="1.5" Opacity="0"/>
+                        </Grid>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="highlight" Property="Opacity" Value="1"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="background" Property="Background" Value="DarkGray"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.1" Duration="0:0:0.1"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.1" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX" To="1.0" Duration="0:0:0.1"/>
+                            <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY" To="1.0" Duration="0:0:0.1"/>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" BasedOn="{StaticResource ElementButtonStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Category}" Value="非金属（二原子分子）">
+                    <Setter Property="Background" Value="{StaticResource NonmetalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="非金属（多原子分子）">
+                    <Setter Property="Background" Value="{StaticResource NonmetalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="貴ガス">
+                    <Setter Property="Background" Value="{StaticResource NobleGasBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="アルカリ金属">
+                    <Setter Property="Background" Value="{StaticResource AlkaliMetalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="アルカリ土類金属">
+                    <Setter Property="Background" Value="{StaticResource AlkalineEarthMetalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="半金属">
+                    <Setter Property="Background" Value="{StaticResource MetalloidBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="ポスト遷移金属">
+                    <Setter Property="Background" Value="{StaticResource PostTransitionMetalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="遷移金属">
+                    <Setter Property="Background" Value="{StaticResource TransitionMetalBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="ランタノイド">
+                    <Setter Property="Background" Value="{StaticResource LanthanideBrush}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Category}" Value="アクチノイド">
+                    <Setter Property="Background" Value="{StaticResource ActinideBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ItemsControl Grid.Row="1" Grid.Column="1" ItemsSource="{Binding AllElements}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="15"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="Grid.Row" Value="{Binding DisplayRow}"/>
+                    <Setter Property="Grid.Column" Value="{Binding DisplayColumn}"/>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Click="ElementButton_Click">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <TextBlock>
+                                    <Run Text="{Binding AtomicNumber, Mode=OneWay}"/>: <Run Text="{Binding Name, Mode=OneWay}" FontWeight="Bold"/>
+                                    <LineBreak/>
+                                    <Run Text="{Binding Category, Mode=OneWay}"/>
+                                </TextBlock>
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <ItemsControl Grid.Column="1" Grid.Row="0" ItemsSource="{Binding GroupNumbers}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Width="36" TextAlignment="Center" FontWeight="SemiBold" Opacity="0.6"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <ItemsControl Grid.Column="0" Grid.Row="1" ItemsSource="{Binding PeriodNumbers}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" Height="36" VerticalAlignment="Center" FontWeight="SemiBold" Opacity="0.6" Margin="0,0,5,0"/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

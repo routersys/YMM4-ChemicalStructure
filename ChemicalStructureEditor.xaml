@@ -1,0 +1,237 @@
+﻿<UserControl x:Class="YMM4ChemicalStructurePlugin.Shape.ChemicalStructureEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:YMM4ChemicalStructurePlugin.Shape"
+             xmlns:c="clr-namespace:YukkuriMovieMaker.Controls;assembly=YukkuriMovieMaker.Controls"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="700" d:DesignWidth="350">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+            <GroupBox Header="プリセット管理" Padding="2" Margin="2">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding PresetNames}" SelectedItem="{Binding SelectedPreset}" Margin="2"/>
+                        <Button Grid.Column="1" Content="適用" Command="{Binding ApplyPresetCommand}" Margin="2,2,2,2" MinWidth="50"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="保存" Command="{Binding SavePresetCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="削除" Command="{Binding DeletePresetCommand}" Margin="1"/>
+                        <Button Grid.Column="2" Content="クリア" Command="{Binding ClearAllCommand}" Margin="1"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="設定" Padding="2" Margin="2">
+                <StackPanel>
+                    <CheckBox Content="パラメーターのデフォルト設定を使用" IsChecked="{Binding UseParameterDefaults}" Margin="2"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="原子の編集" Padding="2" Margin="2">
+                <StackPanel>
+                    <TextBlock Text="原子を選択:" Margin="2"/>
+                    <ComboBox ItemsSource="{Binding Atoms}" SelectedItem="{Binding SelectedAtom1}" Margin="2"/>
+
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="原子を追加" Command="{Binding AddAtomCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="削除" Command="{Binding RemoveAtomCommand}" Margin="1"/>
+                    </Grid>
+
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="元素:" VerticalAlignment="Center" Margin="2"/>
+                        <Grid Grid.Column="1">
+                            <ToggleButton x:Name="ElementSelectorToggle" Content="{Binding SelectedElement}" Margin="2"/>
+                            <Popup IsOpen="{Binding IsChecked, ElementName=ElementSelectorToggle, Mode=TwoWay}" StaysOpen="False" Placement="Bottom" PlacementTarget="{Binding ElementName=ElementSelectorToggle}" AllowsTransparency="True">
+                                <Border BorderBrush="Gray" BorderThickness="1" Background="WhiteSmoke">
+                                    <local:PeriodicTableView x:Name="PeriodicTable" ElementSelected="PeriodicTable_ElementSelected" DataContext="{Binding}"/>
+                                </Border>
+                            </Popup>
+                        </Grid>
+
+                        <TextBlock Grid.Column="2" Text="電荷:" VerticalAlignment="Center" Margin="2"/>
+                        <ComboBox Grid.Column="3" ItemsSource="{Binding Charges}" SelectedItem="{Binding SelectedCharge}" Margin="2"/>
+                    </Grid>
+
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="元素色を適用" Command="{Binding ApplyElementColorCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="↺" Command="{Binding ResetAtomPropertiesCommand}" Margin="1" MinWidth="30" ToolTip="原子プロパティをリセット"/>
+                    </Grid>
+
+                    <c:PropertiesEditor Target="{Binding SelectedAtom1}" Margin="2"
+                                        BeginEdit="PropertiesEditor_BeginEdit"
+                                        EndEdit="PropertiesEditor_EndEdit"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="結合の編集" Padding="2" Margin="2">
+                <StackPanel>
+                    <TextBlock Text="結合する原子を2つ選択:" Margin="2"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding Atoms}" SelectedItem="{Binding SelectedAtom1}" Margin="2"/>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding Atoms}" SelectedItem="{Binding SelectedAtom2}" Margin="2"/>
+                    </Grid>
+
+                    <Grid Margin="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="結合を追加" Command="{Binding AddBondCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="自動結合" Command="{Binding AutoBondCommand}" Margin="1"/>
+                    </Grid>
+
+                    <Separator Margin="2,5"/>
+
+                    <TextBlock Text="結合を選択:" Margin="2"/>
+                    <ListBox ItemsSource="{Binding BondDisplayInfos}" SelectedItem="{Binding SelectedBondDisplayInfo}" MaxHeight="120" Margin="2"
+                             HorizontalContentAlignment="Stretch">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" VerticalAlignment="Center" Text="{Binding DisplayText}" TextWrapping="Wrap"/>
+                                    <Rectangle Grid.Column="1" Width="20" Height="3" VerticalAlignment="Center" Margin="5,0">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="{Binding Color}"/>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Button Content="選択中の結合を削除" Command="{Binding RemoveBondCommand}" Margin="2"/>
+
+                    <c:PropertiesEditor Target="{Binding SelectedBond}" Margin="2"
+                                        BeginEdit="PropertiesEditor_BeginEdit"
+                                        EndEdit="PropertiesEditor_EndEdit"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="自動配置" Padding="2" Margin="2">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="最適化" Command="{Binding OptimizeLayoutCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="整列" Command="{Binding AlignAtomsCommand}" Margin="1"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="環を作成" Command="{Binding CreateRingCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="直鎖化" Command="{Binding LinearizeCommand}" Margin="1"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="表示オプション" Padding="2" Margin="2">
+                <StackPanel>
+                    <CheckBox Content="水素を表示" IsChecked="{Binding ShowHydrogen}" Margin="2"/>
+                    <CheckBox Content="電荷を表示" IsChecked="{Binding ShowCharges}" Margin="2"/>
+                    <CheckBox Content="孤立電子対を表示" IsChecked="{Binding ShowLonePairs}" Margin="2"/>
+                    <CheckBox Content="アンチエイリアス" IsChecked="{Binding AntiAliasing}" Margin="2"/>
+                    <CheckBox Content="略記法表示" IsChecked="{Binding UseSkeletalFormula}" Margin="2"/>
+
+                    <Separator Margin="2,5"/>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Content="全原子表示" Command="{Binding ShowAllAtomsCommand}" Margin="1"/>
+                        <Button Grid.Column="1" Content="炭素非表示" Command="{Binding HideCarbonsCommand}" Margin="1"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="化学式" Padding="2" Margin="2">
+                <StackPanel>
+                    <TextBlock Text="分子式:" Margin="2"/>
+                    <TextBox Text="{Binding MolecularFormula, Mode=OneWay}" IsReadOnly="True" Margin="2" Background="LightGray"/>
+
+                    <TextBlock Text="構造式SMILES:" Margin="2"/>
+                    <TextBox Text="{Binding SmilesNotation, Mode=OneWay}" IsReadOnly="True" Margin="2" Background="LightGray"/>
+
+                    <TextBlock Text="化学式入力:" Margin="2"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Column="0" Text="{Binding InputFormula}" ToolTip="分子式を入力してください (例: H2O, CH4)" Margin="2"/>
+                        <Button Grid.Column="1" Content="生成" Command="{Binding GenerateFromFormulaCommand}" Margin="2,2,2,2" MinWidth="50"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="統計" Padding="2" Margin="2">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="原子数:" Margin="2"/>
+                        <TextBlock Grid.Column="1" Text="{Binding AtomCount}" Margin="2"/>
+                        <TextBlock Grid.Column="2" Text="結合数:" Margin="2"/>
+                        <TextBlock Grid.Column="3" Text="{Binding BondCount}" Margin="2"/>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="分子量:" Margin="2"/>
+                        <TextBlock Grid.Column="1" Text="{Binding MolecularWeight, StringFormat={}{0:F2}}" Margin="2"/>
+                        <TextBlock Grid.Column="2" Text="環数:" Margin="2"/>
+                        <TextBlock Grid.Column="3" Text="{Binding RingCount}" Margin="2"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
